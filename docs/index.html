@@ -1,876 +1,1086 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <style>
-  :root {
-    --primary: #2563eb;
-    --accent: #0f766e;
-    --text: #111827;
-    --muted: #4b5563;
-    --background: #f8fafc;
-    --card: #ffffff;
-    --border: #e5e7eb;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    margin: 0;
-    background: var(--background);
-    color: var(--text);
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.7;
-  }
-
-  header {
-    padding: 72px 24px;
-    background: linear-gradient(135deg, #1e3a8a, #2563eb);
-    color: white;
-    text-align: center;
-  }
-
-  header h1 {
-    max-width: 900px;
-    margin: 16px auto;
-    font-family: "Times New Roman", Times, serif;
-    font-size: clamp(2.2rem, 5vw, 4rem);
-    line-height: 1.15;
-  }
-
-  header p {
-    max-width: 760px;
-    margin: 10px auto;
-    font-size: 1.05rem;
-    color: rgba(255, 255, 255, 0.92);
-  }
-
-  header p strong {
-    color: #ffffff;
-  }
-
-  main {
-    max-width: 960px;
-    margin: -32px auto 60px;
-    padding: 0 20px;
-  }
-
-  section {
-    margin-bottom: 24px;
-    padding: 34px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  }
-
-  h2 {
-    margin-top: 0;
-    padding-bottom: 10px;
-    color: var(--primary);
-    font-family: "Times New Roman", Times, serif;
-    font-size: 2rem;
-    border-bottom: 2px solid var(--border);
-  }
-
-  h3 {
-    margin-top: 28px;
-    color: var(--accent);
-  }
-
-  p,
-  li {
-    color: var(--muted);
-  }
-
-  strong {
-    color: var(--text);
-  }
-
-  blockquote {
-    margin: 24px 0;
-    padding: 18px 22px;
-    background: #eff6ff;
-    border-left: 5px solid var(--primary);
-    border-radius: 6px;
-    color: var(--text);
-  }
-
-  table {
-    width: 100%;
-    margin: 24px 0;
-    border-collapse: collapse;
-    background: white;
-  }
-
-  th,
-  td {
-    padding: 12px;
-    border: 1px solid var(--border);
-    text-align: left;
-  }
-
-  th {
-    background: #eff6ff;
-    color: var(--text);
-  }
-
-  .highlight {
-    padding: 20px;
-    background: #ecfdf5;
-    border-left: 5px solid var(--accent);
-    border-radius: 6px;
-  }
-
-  .metric-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin: 24px 0;
-  }
-
-  .metric {
-    padding: 20px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    text-align: center;
-  }
-
-  .metric strong {
-    display: block;
-    color: var(--primary);
-    font-size: 1.8rem;
-  }
-
-  footer {
-    padding: 30px 20px;
-    color: var(--muted);
-    text-align: center;
-  }
-
-  @media (max-width: 600px) {
-    header {
-      padding: 50px 18px;
-    }
-
-    section {
-      padding: 24px 20px;
-    }
-
-    main {
-      margin-top: -20px;
-    }
-  }
-</style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Ranking Webpages for Next-Month Click Decline</title>
+  <title>Predicting Content Decline with Machine Learning | Muskan Shaikh</title>
 
   <meta
     name="description"
-    content="A FlyRank machine learning capstone by Muskan Shaikh."
+    content="A machine learning research artifact for prioritizing content that may require review or refresh."
   >
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --surface: #ffffff;
+      --surface-raised: #fbfaf6;
+      --border: #e4e0d6;
+      --border-soft: #ece9df;
+      --text: #201f1c;
+      --muted: #5e5a50;
+      --muted-dim: #948f81;
+      --accent: #2e4b45;
+      --accent-soft: #e2eae6;
+      --accent-line: #b9cbc4;
+      --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+      --display: "Fraunces", ui-serif, Georgia, serif;
+      --body: "IBM Plex Sans", ui-sans-serif, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* ---------------------------------------------------------
+       HEADER / HERO
+    --------------------------------------------------------- */
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 84px 20px 60px;
+      position: relative;
+    }
+
+    .hero {
+      max-width: 1080px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 20px 0 20px;
+      font-family: var(--display);
+      font-weight: 600;
+      font-optical-sizing: auto;
+      font-size: clamp(2.1rem, 4.6vw, 3.7rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-description {
+      max-width: 700px;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .author-row {
+      margin-top: 34px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .author-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--display);
+      font-weight: 600;
+      color: #f4f2ec;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .author-name {
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+
+    .author-role {
+      color: var(--muted-dim);
+      font-size: 0.85rem;
+      font-family: var(--mono);
+    }
+
+    /* ---------------------------------------------------------
+       NAV
+    --------------------------------------------------------- */
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(247, 245, 240, 0.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    nav a {
+      color: var(--muted-dim);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.15s ease;
+    }
+
+    nav a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* ---------------------------------------------------------
+       LAYOUT / TYPOGRAPHY
+    --------------------------------------------------------- */
+
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 20px 100px;
+    }
+
+    section {
+      margin: 72px 0;
+      scroll-margin-top: 90px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .section-index {
+      font-family: var(--mono);
+      color: var(--accent);
+      opacity: 0.6;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.9rem;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      margin-top: 30px;
+      margin-bottom: 10px;
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: var(--text);
+    }
+
+    p { color: var(--muted); margin: 0 0 14px; }
+
+    /* ---------------------------------------------------------
+       ABSTRACT
+    --------------------------------------------------------- */
+
+    .abstract {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 30px 32px;
+      border-radius: 4px;
+    }
+
+    .abstract p { color: var(--text); margin: 0; font-size: 1rem; }
+
+    /* ---------------------------------------------------------
+       METRIC GRID
+    --------------------------------------------------------- */
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      margin: 30px 0;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .metric {
+      background: var(--surface);
+      padding: 26px 20px;
+      text-align: left;
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 8px;
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 1.9rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .metric span {
+      color: var(--muted-dim);
+      font-size: 0.82rem;
+      letter-spacing: 0.01em;
+    }
+
+    /* Ranked scoreboard for results metrics */
+
+    .scoreboard {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      margin: 30px 0;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .score-row {
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 22px;
+    }
+
+    .score-row.is-winner { background: var(--accent-soft); }
+
+    .rank-num {
+      font-family: var(--mono);
+      color: var(--muted-dim);
+      font-size: 0.85rem;
+    }
+
+    .score-row.is-winner .rank-num { color: var(--accent); }
+
+    .score-label {
+      font-weight: 500;
+      font-size: 0.96rem;
+      color: var(--text);
+    }
+
+    .score-bar-track {
+      grid-column: 1 / -1;
+      height: 8px;
+      background: var(--border-soft);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: var(--muted-dim);
+    }
+
+    .score-row.is-winner .score-bar-fill { background: var(--accent); }
+
+    .score-value {
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .score-row.is-winner .score-value { color: var(--accent); }
+
+    /* ---------------------------------------------------------
+       CARDS
+    --------------------------------------------------------- */
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      margin-top: 24px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .card {
+      background: var(--surface);
+      padding: 26px 26px 22px;
+    }
+
+    .card.is-selected {
+      background: var(--accent-soft);
+      position: relative;
+    }
+
+    .card.is-selected::before {
+      content: "SELECTED";
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      border: 1px solid var(--accent-line);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    .card h3 { margin-top: 0; }
+    .card p { margin-bottom: 0; }
+
+    /* ---------------------------------------------------------
+       TABLE
+    --------------------------------------------------------- */
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-soft);
+      text-align: left;
+    }
+
+    th {
+      background: var(--surface-raised);
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted-dim);
+    }
+
+    td { color: var(--muted); font-family: var(--mono); font-size: 0.92rem; }
+    td:first-child { color: var(--text); font-family: var(--body); }
+
+    tr:last-child td { border-bottom: none; color: var(--accent); }
+    tr:last-child td:first-child { color: var(--text); font-weight: 600; }
+
+    /* ---------------------------------------------------------
+       HIGHLIGHT
+    --------------------------------------------------------- */
+
+    .highlight {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 26px;
+      margin: 25px 0;
+    }
+
+    .highlight strong {
+      display: block;
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .highlight p { margin: 0 0 8px; color: var(--text); }
+    .highlight p:last-child { margin-bottom: 0; }
+    .highlight p strong { display: inline; text-transform: none; letter-spacing: normal; font-size: inherit; }
+
+    /* ---------------------------------------------------------
+       CHARTS
+    --------------------------------------------------------- */
+
+    .chart {
+      margin: 30px 0;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .chart h4 {
+      margin: 0 0 16px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted-dim);
+      font-weight: 500;
+    }
+
+    .chart img {
+      display: block;
+      width: 100%;
+      max-width: 900px;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 4px;
+    }
+
+    /* ---------------------------------------------------------
+       LISTS / CODE
+    --------------------------------------------------------- */
+
+    ol, ul { color: var(--muted); padding-left: 22px; }
+    li { margin-bottom: 14px; }
+    li strong { color: var(--text); }
+
+    code {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-line);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 0.88em;
+      color: var(--accent);
+    }
+
+    /* ---------------------------------------------------------
+       REPRO BOX
+    --------------------------------------------------------- */
+
+    .repro-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px 30px;
+    }
+
+    .repro-box p { margin-bottom: 12px; }
+    .repro-box p:last-child { margin-bottom: 0; }
+    .repro-box p strong { color: var(--text); font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.02em; }
+
+    /* ---------------------------------------------------------
+       FOOTER
+    --------------------------------------------------------- */
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 44px 20px;
+      text-align: center;
+      color: var(--muted-dim);
+      font-size: 0.9rem;
+    }
+
+    .footer p { color: var(--muted-dim); margin: 4px 0; }
+
+    /* ---------------------------------------------------------
+       RESPONSIVE
+    --------------------------------------------------------- */
+
+    @media (max-width: 850px) {
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      header { padding: 56px 18px 44px; }
+      main { padding: 30px 16px 70px; }
+      .metric-grid { grid-template-columns: 1fr; }
+      .metric strong { font-size: 1.6rem; }
+      h2 { font-size: 1.55rem; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+      .chart { padding: 16px; }
+      .score-row { grid-template-columns: 24px 1fr auto; padding: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
 </head>
 
 <body>
+
+  <!-- =========================================================
+       HERO
+  ========================================================== -->
+
   <header>
-    <p>FlyRank Machine Learning Internship Capstone</p>
+    <div class="hero">
 
-    <h1>Ranking Webpages for Next-Month Click Decline</h1>
+      <div class="eyebrow">Machine Learning Research Artifact</div>
 
-    <p>
-      An honest comparison of a CTR baseline and Logistic Regression for
-      prioritizing webpages for content review.
-    </p>
+      <h1>Predicting Content Decline with Machine Learning</h1>
 
-    <p><strong>Author:</strong> Muskan Shaikh</p>
-    <p><strong>Lane:</strong> Refresh / Content Opportunity Scoring</p>
+      <p class="hero-description">
+        A machine-learning approach for prioritizing content that may
+        require review or refresh using historical search-performance
+        and content-related signals.
+      </p>
+
+      <div class="author-row">
+        <div class="author-badge">MS</div>
+        <div>
+          <div class="author-name">Muskan Shaikh</div>
+          <div class="author-role">Author</div>
+        </div>
+      </div>
+
+    </div>
   </header>
 
+
+  <!-- =========================================================
+       NAVIGATION
+  ========================================================== -->
+
+  <nav>
+    <div class="nav-inner">
+      <a href="#abstract">Abstract</a>
+      <a href="#introduction">Introduction</a>
+      <a href="#data">Data</a>
+      <a href="#methodology">Methodology</a>
+      <a href="#results">Results</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#recommendations">Recommendations</a>
+      <a href="#reproducibility">Reproducibility</a>
+      <a href="#acknowledgments">Credit</a>
+    </div>
+  </nav>
+
+
   <main>
+
+    <!-- =======================================================
+         ABSTRACT
+    ======================================================== -->
+
     <section id="abstract">
-  <h2>Abstract</h2>
+      <div class="section-head">
+        <span class="section-index">§</span>
+        <h2>Abstract</h2>
+      </div>
 
-  <p>
-    This capstone examines whether February search and engagement signals
-    can help prioritize webpages that later experience lower average daily
-    clicks in March.
-  </p>
+      <div class="abstract">
+        <p>
+          This study investigates whether historical search-performance
+          and content-related signals can help prioritize content that
+          may be declining. The analysis uses 30,000 rows and 52 model
+          features to compare a transparent baseline with Logistic
+          Regression, Decision Tree, and Random Forest models. Models
+          were evaluated using a client-holdout split, with Precision@50
+          used as the main prioritization metric. Random Forest achieved
+          a Precision@50 of 0.74 compared with 0.24 for the baseline.
+          The result is intended as directional decision support for
+          human review rather than a guarantee of future content decline.
+        </p>
+      </div>
+    </section>
 
-  <p>
-    The analysis uses 23,703 webpages from 19 anonymized clients. Six
-    February-only features were evaluated using a client-grouped holdout,
-    ensuring that all four test clients were unseen during model training.
-  </p>
 
-  <p>
-    A simple February click-through rate baseline was compared with
-    Logistic Regression. Both methods achieved 100% Precision@20 and 98%
-    Precision@50. The CTR baseline achieved slightly higher average
-    precision: 0.8755 compared with 0.8619 for Logistic Regression.
-  </p>
+    <!-- =======================================================
+         1. INTRODUCTION
+    ======================================================== -->
 
-  <div class="highlight">
-    The simpler CTR baseline performed slightly better than the
-    machine-learning model. Therefore, the final recommendation queue uses
-    February CTR as its ranking signal.
-  </div>
+    <section id="introduction">
+      <div class="section-head">
+        <span class="section-index">01</span>
+        <h2>Introduction / Problem Statement</h2>
+      </div>
 
-  <p>
-    The final output is a ranked decision-support queue with warnings for
-    low-volume pages where CTR may be unstable. The results are
-    observational and specific to this dataset, validation split and the
-    February-to-March 2026 period.
-  </p>
-</section>
+      <p>
+        Content teams may have many pages that could require review,
+        making it difficult to decide which pages should be examined
+        first.
+      </p>
 
-    <section id="problem">
-  <h2>Problem Statement</h2>
+      <p>
+        This project investigates whether historical search-performance
+        and content signals can be used to prioritize potentially
+        declining content.
+      </p>
 
-  <p>
-    Content teams may manage thousands of webpages but have limited time
-    for manual review. They need a practical way to identify which pages
-    deserve attention first.
-  </p>
+      <div class="highlight">
+        <strong>Decision supported</strong>
+        <p>Which content should be reviewed or refreshed first?</p>
+      </div>
 
-  <blockquote>
-    Can February search and engagement signals help rank webpages that are
-    likely to experience lower average daily clicks in March?
-  </blockquote>
+      <p>
+        The goal is not to automatically change content. Instead,
+        the model produces a ranked prioritization signal that can
+        help a human reviewer decide where to investigate first.
+      </p>
+    </section>
 
-  <p>
-    The goal of this project is not to automatically decide that a page
-    must be refreshed, deleted or rewritten.
-  </p>
 
-  <p>
-    Instead, the project creates a ranked review queue that helps content
-    teams investigate potentially declining pages more efficiently.
-  </p>
-
-  <h3>Decision supported</h3>
-
-  <p>
-    The output supports a simple operational decision:
-    which webpages should a content team review first?
-  </p>
-
-  <h3>Unit of analysis</h3>
-
-  <p>
-    Each row represents one anonymized webpage belonging to one anonymized
-    client.
-  </p>
-
-  <h3>Target</h3>
-
-  <p>
-    The binary target records whether a webpage had lower average daily
-    clicks in March 2026 than in February 2026.
-  </p>
-
-  <p>
-    A target value of 1 means that average daily clicks declined. A target
-    value of 0 means that they stayed the same or increased.
-  </p>
-</section>
+    <!-- =======================================================
+         2. DATA
+    ======================================================== -->
 
     <section id="data">
-  <h2>Dataset and Time Windows</h2>
+      <div class="section-head">
+        <span class="section-index">02</span>
+        <h2>Data</h2>
+      </div>
 
-  <p>
-    This project uses anonymized webpage performance data from the FlyRank
-    internship warehouse.
-  </p>
+      <p>
+        The analysis uses the FlyRank ML Internship dataset containing
+        search-performance, engagement, content, and related signals.
+      </p>
 
-  <p>
-    The analysis began with 23,742 webpage records. After removing rows that
-    could not be used safely for modelling, 23,703 rows remained.
-  </p>
+      <div class="metric-grid">
+        <div class="metric"><strong>30,000</strong><span>Input rows</span></div>
+        <div class="metric"><strong>52</strong><span>Model features</span></div>
+        <div class="metric"><strong>27,675</strong><span>Training rows</span></div>
+        <div class="metric"><strong>2,325</strong><span>Test rows</span></div>
+      </div>
 
-  <div class="metric-grid">
-    <div class="metric">
-      <strong>23,703</strong>
-      Modelling rows
-    </div>
+      <h3>Target</h3>
 
-    <div class="metric">
-      <strong>19</strong>
-      Anonymized clients
-    </div>
+      <p>
+        The target variable used by the pipeline was
+        <code>is_declining_label</code>.
+        The positive class represented content classified as declining
+        under the project's label definition.
+      </p>
 
-    <div class="metric">
-      <strong>6</strong>
-      February features
-    </div>
+      <h3>Feature Groups</h3>
 
-    <div class="metric">
-      <strong>39.45%</strong>
-      Overall decline rate
-    </div>
-  </div>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Search &amp; Traffic</h3>
+          <p>
+            Search volume, impressions, clicks, sessions, CTR,
+            average position, and related traffic signals.
+          </p>
+        </div>
 
-  <h3>Feature window</h3>
+        <div class="card">
+          <h3>Content &amp; Engagement</h3>
+          <p>
+            Content age, word count, character count, engagement,
+            scroll rate, freshness, and related content signals.
+          </p>
+        </div>
+      </div>
 
-  <p>
-    Only February 2026 information was used as model input.
-  </p>
+      <h3>Public-Safety Handling</h3>
 
-  <p>The six features were:</p>
+      <p>
+        The public research artifact does not expose client names,
+        private queries, private URLs, or other sensitive client
+        information.
+      </p>
+    </section>
 
-  <ul>
-    <li>Average daily impressions</li>
-    <li>Average daily clicks</li>
-    <li>Average search position</li>
-    <li>Average daily sessions</li>
-    <li>Engagement rate</li>
-    <li>Click-through rate</li>
-  </ul>
 
-  <h3>Outcome window</h3>
+    <!-- =======================================================
+         3. METHODOLOGY
+    ======================================================== -->
 
-  <p>
-    March 2026 data was used only to create the later outcome label.
-  </p>
+    <section id="methodology">
+      <div class="section-head">
+        <span class="section-index">03</span>
+        <h2>Methodology</h2>
+      </div>
 
-  <p>
-    A webpage was labelled as a decline when its March average daily clicks
-    were lower than its February average daily clicks.
-  </p>
+      <h3>Feature Preparation</h3>
 
-  <h3>Privacy protection</h3>
+      <p>
+        The pipeline cleaned the available data, prepared numeric and
+        categorical features, and constructed the final feature vector.
+        The resulting model input contained 52 features.
+      </p>
 
-  <p>
-    The analysis uses anonymized client and content identifiers. No client
-    names, domains, private queries, access tokens or raw warehouse exports
-    are published.
-  </p>
-</section>
+      <h3>Models</h3>
 
-    <section id="method">
-  <h2>Methods</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>Baseline</h3>
+          <p>
+            A transparent hand-written rule was used as the baseline
+            that the learned models needed to beat.
+          </p>
+        </div>
 
-  <h3>Baseline</h3>
+        <div class="card">
+          <h3>Logistic Regression</h3>
+          <p>
+            A simple linear classification model used as one learned
+            comparison point.
+          </p>
+        </div>
 
-  <p>
-    The baseline ranks webpages from highest to lowest February
-    click-through rate.
-  </p>
+        <div class="card">
+          <h3>Decision Tree</h3>
+          <p>
+            A tree-based classifier used to capture non-linear
+            relationships between features.
+          </p>
+        </div>
 
-  <p>
-    This provides a simple and interpretable benchmark that the
-    machine-learning model must outperform.
-  </p>
+        <div class="card is-selected">
+          <h3>Random Forest</h3>
+          <p>
+            An ensemble of decision trees. It produced the strongest
+            Precision@50 and was selected as the final model.
+          </p>
+        </div>
+      </div>
 
-  <h3>Machine-learning model</h3>
+      <h3>Validation Design</h3>
 
-  <p>
-    Logistic Regression was selected because it is suitable for binary
-    classification and its feature coefficients can be interpreted.
-  </p>
+      <p>
+        The pipeline used a <strong style="color:var(--text)">client-holdout</strong> split.
+        There were 27,675 training rows and 2,325 test rows.
+      </p>
 
-  <p>
-    The six February features were standardized before training so that
-    differences in feature scale did not dominate the model.
-  </p>
+      <h3>Model Selection</h3>
 
-  <h3>Evaluation metrics</h3>
+      <p>
+        Precision@50 was used as the primary model-selection metric
+        because the practical objective is to prioritize a small
+        ranked set of content for human review.
+      </p>
 
-  <p>
-    The project focuses on ranking quality because the practical goal is to
-    identify which webpages should be reviewed first.
-  </p>
+      <h3>Leakage Checks</h3>
 
-  <ul>
-    <li>
-      <strong>Precision@20:</strong> the percentage of actual declines among
-      the 20 highest-ranked webpages.
-    </li>
-    <li>
-      <strong>Precision@50:</strong> the percentage of actual declines among
-      the 50 highest-ranked webpages.
-    </li>
-    <li>
-      <strong>Average Precision:</strong> ranking quality across the full
-      precision-recall curve.
-    </li>
-  </ul>
+      <p>
+        The feature preparation process was designed to keep target
+        information out of the model features. Evaluation was performed
+        on the held-out test set rather than on the training data.
+      </p>
+    </section>
 
-  <h3>Model comparison</h3>
 
-  <p>
-    The CTR baseline and Logistic Regression were evaluated on exactly the
-    same unseen test rows using the same metrics.
-  </p>
-
-  <p>
-    The simpler baseline was preferred when the machine-learning model did
-    not produce a measurable improvement.
-  </p>
-</section>
-
-    <section id="validation">
-  <h2>Validation and Leakage Controls</h2>
-
-  <h3>Client-grouped holdout</h3>
-
-  <p>
-    The data was split by client rather than by individual webpage.
-  </p>
-
-  <p>
-    This prevented webpages from the same client appearing in both the
-    training and test sets.
-  </p>
-
-  <div class="metric-grid">
-    <div class="metric">
-      <strong>15</strong>
-      Training clients
-    </div>
-
-    <div class="metric">
-      <strong>4</strong>
-      Unseen test clients
-    </div>
-
-    <div class="metric">
-      <strong>0</strong>
-      Client overlap
-    </div>
-
-    <div class="metric">
-      <strong>1,671</strong>
-      Test webpages
-    </div>
-  </div>
-
-  <p>
-    The training set contained 22,032 webpages, while the test set contained
-    1,671 webpages from four completely unseen clients.
-  </p>
-
-  <h3>Time-based leakage prevention</h3>
-
-  <p>
-    All model features came from February 2026.
-  </p>
-
-  <p>
-    March information was used only to create the later decline label and
-    was not included as a model feature.
-  </p>
-
-  <h3>Identifier leakage prevention</h3>
-
-  <p>
-    Client and content identifiers were retained only for grouping,
-    auditing and displaying anonymized results.
-  </p>
-
-  <p>
-    They were not used as predictive features.
-  </p>
-
-  <h3>Missing-value check</h3>
-
-  <p>
-    The final modelling dataset contained no missing values across the six
-    selected features.
-  </p>
-
-  <h3>Reproducibility</h3>
-
-  <p>
-    A fixed random seed of 42 was used for the grouped split and model
-    training.
-  </p>
-
-  <div class="highlight">
-    The final audit confirmed zero client overlap, February-only features,
-    no missing model values and identical test rows for both methods.
-  </div>
-</section>
+    <!-- =======================================================
+         4. RESULTS
+    ======================================================== -->
 
     <section id="results">
-  <h2>Results</h2>
+      <div class="section-head">
+        <span class="section-index">04</span>
+        <h2>Results</h2>
+      </div>
 
-  <p>
-    The test set had a decline base rate of 23.22%. This means that without
-    useful ranking information, approximately 23 out of every 100 test
-    webpages would be expected to decline.
-  </p>
+      <p>
+        The models were evaluated on the same client-holdout test set
+        containing 2,325 rows. Precision@50 measures how many of the
+        top 50 ranked predictions were correct.
+      </p>
 
-  <div class="metric-grid">
-    <div class="metric">
-      <strong>100%</strong>
-      Baseline Precision@20
-    </div>
+      <div class="scoreboard">
 
-    <div class="metric">
-      <strong>98%</strong>
-      Baseline Precision@50
-    </div>
+        <div class="score-row">
+          <span class="rank-num">04</span>
+          <span class="score-label">Baseline</span>
+          <span class="score-value">0.24</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:32%"></div></div>
+        </div>
 
-    <div class="metric">
-      <strong>0.8755</strong>
-      Baseline Average Precision
-    </div>
+        <div class="score-row">
+          <span class="rank-num">03</span>
+          <span class="score-label">Logistic Regression</span>
+          <span class="score-value">0.40</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:54%"></div></div>
+        </div>
 
-    <div class="metric">
-      <strong>0.8619</strong>
-      Logistic Regression Average Precision
-    </div>
-  </div>
+        <div class="score-row">
+          <span class="rank-num">02</span>
+          <span class="score-label">Decision Tree</span>
+          <span class="score-value">0.58</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:78%"></div></div>
+        </div>
 
-  <h3>Baseline versus model</h3>
+        <div class="score-row is-winner">
+          <span class="rank-num">01</span>
+          <span class="score-label">Random Forest</span>
+          <span class="score-value">0.74</span>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:100%"></div></div>
+        </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Method</th>
-        <th>Precision@20</th>
-        <th>Precision@50</th>
-        <th>Average Precision</th>
-      </tr>
-    </thead>
+      </div>
 
-    <tbody>
-      <tr>
-        <td>February CTR baseline</td>
-        <td>100%</td>
-        <td>98%</td>
-        <td>0.8755</td>
-      </tr>
+      <h3>Model Comparison</h3>
 
-      <tr>
-        <td>Logistic Regression</td>
-        <td>100%</td>
-        <td>98%</td>
-        <td>0.8619</td>
-      </tr>
-    </tbody>
-  </table>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Precision@50</th><th>ROC-AUC</th><th>F1</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Baseline</td><td>0.24</td><td>0.627</td><td>0.274</td></tr>
+          <tr><td>Logistic Regression</td><td>0.40</td><td>0.700</td><td>0.566</td></tr>
+          <tr><td>Decision Tree</td><td>0.58</td><td>0.742</td><td>0.634</td></tr>
+          <tr><td>Random Forest</td><td>0.74</td><td>0.750</td><td>0.640</td></tr>
+        </tbody>
+      </table>
 
-  <div class="highlight">
-    Logistic Regression did not outperform the simpler CTR baseline.
-    Its average precision was 0.0136 lower.
-  </div>
+      <div class="highlight">
+        <strong>Key finding</strong>
+        <p>
+          Random Forest achieved a Precision@50 of
+          <strong>0.74</strong>, compared with
+          <strong>0.24</strong> for the baseline.
+        </p>
+        <p>
+          This means 74% of the top 50 ranked predictions in the
+          held-out evaluation set were positive under the project's
+          declining label.
+        </p>
+      </div>
 
-  <h3>Feature evidence</h3>
+      <h3>Additional Performance</h3>
 
-  <p>
-    February CTR had the largest positive Logistic Regression coefficient,
-    making it the strongest ranking signal among the six selected features.
-  </p>
+      <table>
+        <thead>
+          <tr><th>Model</th><th>Accuracy</th><th>Average Precision</th><th>Recall</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Baseline</td><td>0.609</td><td>0.468</td><td>0.189</td></tr>
+          <tr><td>Logistic Regression</td><td>0.661</td><td>0.522</td><td>0.567</td></tr>
+          <tr><td>Decision Tree</td><td>0.677</td><td>0.575</td><td>0.716</td></tr>
+          <tr><td>Random Forest</td><td>0.672</td><td>0.618</td><td>0.744</td></tr>
+        </tbody>
+      </table>
 
-  <p>
-    When CTR was removed, model average precision fell from 0.8619 to
-    0.4231. This shows that the model depended heavily on CTR rather than
-    discovering several equally strong signals.
-  </p>
+      <h3>Top Feature Importance</h3>
 
-  <h3>Error analysis</h3>
+      <p>
+        The strongest Random Forest feature-importance signals included
+        days with impressions, recent impressions, average position,
+        content age, and character count.
+      </p>
 
-  <p>
-    At a classification threshold of 0.50, the model produced:
-  </p>
+      <div class="chart">
+        <h4>Trend Distribution</h4>
+        <img src="charts/trend_distribution.svg" alt="Trend distribution chart">
+      </div>
 
-  <ul>
-    <li>1,252 true negatives</li>
-    <li>172 true positives</li>
-    <li>31 false positives</li>
-    <li>216 false negatives</li>
-  </ul>
+      <div class="chart">
+        <h4>Top Feature Importance</h4>
+        <img src="charts/top_feature_importance.svg" alt="Top feature importance chart">
+      </div>
 
-  <p>
-    Reviewing individual errors showed that low-volume pages can receive
-    high scores because a small number of clicks can create a large CTR.
-    This finding informed the warning labels used in the final review queue.
-  </p>
+      <div class="chart">
+        <h4>Prediction Confidence Mix</h4>
+        <img src="charts/confidence_mix.svg" alt="Prediction confidence mix chart">
+      </div>
+    </section>
 
-  <h3>Interpretation</h3>
 
-  <p>
-    The result does not show that high CTR causes future click decline.
-    It only shows that February CTR was a strong ranking signal in this
-    specific grouped holdout and time period.
-  </p>
-</section>
-
-    <section id="recommendations">
-  <h2>Ranked Recommendations</h2>
-
-  <h3>Final ranking method</h3>
-
-  <p>
-    The final decision-support queue ranks webpages from highest to lowest
-    February CTR.
-  </p>
-
-  <p>
-    This baseline was selected because it achieved slightly higher average
-    precision than Logistic Regression while remaining simpler and easier
-    to explain.
-  </p>
-
-  <div class="metric-grid">
-    <div class="metric">
-      <strong>20</strong>
-      Pages reviewed
-    </div>
-
-    <div class="metric">
-      <strong>20</strong>
-      Later declines
-    </div>
-
-    <div class="metric">
-      <strong>100%</strong>
-      Observed Precision@20
-    </div>
-  </div>
-
-  <h3>Example ranked queue</h3>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Rank</th>
-        <th>Anonymized webpage</th>
-        <th>Priority score</th>
-        <th>Reason</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td>content_352d9fcaa95cc585</td>
-        <td>0.5000</td>
-        <td>High CTR on low volume — verify stability</td>
-      </tr>
-
-      <tr>
-        <td>2</td>
-        <td>content_a2a6bb5f54f80474</td>
-        <td>0.3333</td>
-        <td>High CTR on low volume — verify stability</td>
-      </tr>
-
-      <tr>
-        <td>3</td>
-        <td>content_d91a26c47a64ab72</td>
-        <td>0.3333</td>
-        <td>High CTR on low volume — verify stability</td>
-      </tr>
-
-      <tr>
-        <td>4</td>
-        <td>content_f6b1edbea759eb74</td>
-        <td>0.3333</td>
-        <td>High CTR on low volume — verify stability</td>
-      </tr>
-
-      <tr>
-        <td>5</td>
-        <td>content_323e818c13804f5f</td>
-        <td>0.3333</td>
-        <td>High CTR on low volume — verify stability</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="highlight">
-    Most top-ranked webpages had very low traffic volume. A small number of
-    clicks can create a high CTR, so these pages should be investigated
-    rather than automatically refreshed.
-  </div>
-
-  <h3>Recommended review workflow</h3>
-
-  <ol>
-    <li>Check whether the page has enough impressions and clicks for a stable CTR.</li>
-    <li>Review its recent traffic and ranking trend.</li>
-    <li>Check for seasonality or changes in search demand.</li>
-    <li>Inspect content freshness, relevance and technical issues.</li>
-    <li>Compare the page with competing or overlapping content.</li>
-    <li>Choose monitoring, updating or no action after human review.</li>
-  </ol>
-
-  <h3>Intended use</h3>
-
-  <p>
-    The queue helps a content team decide which webpages to investigate
-    first. It does not automatically determine that a page should be
-    rewritten, deleted or refreshed.
-  </p>
-</section>
+    <!-- =======================================================
+         5. LIMITATIONS
+    ======================================================== -->
 
     <section id="limitations">
-  <h2>Limitations</h2>
+      <div class="section-head">
+        <span class="section-index">05</span>
+        <h2>Limitations</h2>
+      </div>
 
-  <h3>Limited time window</h3>
+      <ul>
+        <li>The model identifies patterns associated with the declining label; it does not prove that a page will decline in the future.</li>
+        <li>The evaluation is based on a client-holdout split and may not generalize to every website or search environment.</li>
+        <li>Feature importance describes model usefulness, not causation.</li>
+        <li>The target label reflects the project's available historical labeling process and may contain its own assumptions.</li>
+        <li>Model performance may vary when the data distribution or operating environment changes.</li>
+        <li>Recommendations require human review before implementation.</li>
+      </ul>
 
-  <p>
-    The analysis uses February 2026 features and a March 2026 outcome.
-    Performance may differ during other months because of seasonality,
-    changing search demand or unusual traffic patterns.
-  </p>
+      <div class="highlight">
+        <strong>Honest framing</strong>
+        <p>
+          These results should be interpreted as measured and directional
+          decision support. They should not be presented as a guarantee
+          of future traffic, rankings, or content performance.
+        </p>
+      </div>
+    </section>
 
-  <h3>Limited unseen clients</h3>
 
-  <p>
-    The test set contained four unseen clients. This supports honest
-    validation, but it is not enough to claim that the same performance
-    will occur for every client.
-  </p>
+    <!-- =======================================================
+         6. RECOMMENDATIONS
+    ======================================================== -->
 
-  <h3>Single grouped split</h3>
+    <section id="recommendations">
+      <div class="section-head">
+        <span class="section-index">06</span>
+        <h2>Ranked Recommendations</h2>
+      </div>
 
-  <p>
-    The results come from one client-grouped holdout. Future work should
-    repeat the analysis across multiple grouped splits to measure result
-    stability.
-  </p>
+      <p>
+        The model output is designed to help prioritize content for
+        human review.
+      </p>
 
-  <h3>Strong dependence on CTR</h3>
+      <ol>
+        <li><strong>Review high-risk pages first.</strong> Start with pages receiving the strongest decline-risk scores from the Random Forest model.</li>
+        <li><strong>Investigate weak search performance.</strong> Review pages showing weaker impressions, clicks, sessions, or search positions.</li>
+        <li><strong>Check older content.</strong> Review older pages and pages that have not been updated recently for outdated or less relevant information.</li>
+        <li><strong>Review engagement signals.</strong> Examine weaker engagement-related signals for possible content or user-experience issues.</li>
+        <li><strong>Use human review before action.</strong> The model should help decide what to investigate first. It should not automatically decide which content must be changed.</li>
+      </ol>
 
-  <p>
-    Logistic Regression relied heavily on February CTR. Removing CTR
-    reduced average precision from 0.8619 to 0.4231.
-  </p>
+      <div class="chart">
+        <h4>Top Reason Codes</h4>
+        <img src="charts/top_reason_codes.svg" alt="Top reason codes chart">
+      </div>
 
-  <h3>Low-volume instability</h3>
+      <div class="chart">
+        <h4>Action Mix</h4>
+        <img src="charts/action_mix.svg" alt="Recommended action mix chart">
+      </div>
+    </section>
 
-  <p>
-    Many top-ranked webpages had very low impressions and clicks. A small
-    number of clicks can create an unusually high CTR.
-  </p>
 
-  <p>
-    A production workflow should include a minimum-volume rule or an
-    uncertainty warning.
-  </p>
+    <!-- =======================================================
+         7. REPRODUCIBILITY
+    ======================================================== -->
 
-  <h3>Binary target limitation</h3>
+    <section id="reproducibility">
+      <div class="section-head">
+        <span class="section-index">07</span>
+        <h2>Reproducibility</h2>
+      </div>
 
-  <p>
-    The target only records whether March average daily clicks were lower
-    than February average daily clicks.
-  </p>
+      <div class="repro-box">
+        <p>
+          The project repository contains the analysis notebook,
+          processing scripts, generated outputs, and research artifacts.
+        </p>
 
-  <p>It does not measure:</p>
+        <p><strong>Notebook:</strong> <code>work/notebooks/capstone.ipynb</code></p>
+        <p><strong>Charts:</strong> <code>docs/charts/</code></p>
+        <p><strong>Model results:</strong> <code>outputs/model_results.json</code></p>
+        <p><strong>Model predictions:</strong> <code>data/processed/model_predictions.csv</code></p>
 
-  <ul>
-    <li>The size of the decline</li>
-    <li>Whether the decline was temporary</li>
-    <li>Whether seasonality caused the decline</li>
-    <li>Whether the page actually required a content update</li>
-  </ul>
+        <p>
+          The pipeline includes feature preparation, baseline creation,
+          model training, evaluation, chart generation, and report
+          generation.
+        </p>
 
-  <h3>No causal claim</h3>
+        <p>
+          The capstone notebook should be run from top to bottom to
+          reproduce the documented analysis workflow.
+        </p>
+      </div>
+    </section>
 
-  <p>
-    The analysis identifies predictive relationships. It does not prove
-    that high CTR causes future decline or that refreshing a flagged page
-    will improve performance.
-  </p>
 
-  <div class="highlight">
-    The results should be used as decision support for human review, not as
-    an automatic content-refresh system.
-  </div>
-</section>
+    <!-- =======================================================
+         8. ACKNOWLEDGMENTS
+    ======================================================== -->
 
-    <section id="conclusion">
-  <h2>Conclusion</h2>
+    <section id="acknowledgments">
+      <div class="section-head">
+        <span class="section-index">08</span>
+        <h2>Acknowledgments &amp; Data Credit</h2>
+      </div>
 
-  <p>
-    This capstone investigated whether February search and engagement
-    signals could help rank webpages that later experienced lower average
-    daily clicks in March.
-  </p>
+      <p>Built on the FlyRank ML Internship dataset.</p>
 
-  <p>
-    The analysis used 23,703 webpages from 19 anonymized clients and a
-    client-grouped holdout with four completely unseen test clients.
-  </p>
+      <p>
+        Data source:
+        <a href="https://flyrank.ai" target="_blank" rel="noopener noreferrer">FlyRank</a>
+      </p>
 
-  <p>
-    The February CTR baseline achieved:
-  </p>
+      <p>This research artifact was created as part of the FlyRank Machine Learning track.</p>
+    </section>
 
-  <ul>
-    <li>100% Precision@20</li>
-    <li>98% Precision@50</li>
-    <li>0.8755 Average Precision</li>
-  </ul>
 
-  <p>
-    Logistic Regression achieved the same Precision@20 and Precision@50,
-    but a slightly lower Average Precision of 0.8619.
-  </p>
+    <!-- =======================================================
+         CONCLUSION
+    ======================================================== -->
 
-  <div class="highlight">
-    The machine-learning model did not outperform the simpler baseline.
-    Therefore, the final ranked review queue uses February CTR.
-  </div>
+    <section>
+      <div class="section-head">
+        <span class="section-index">§</span>
+        <h2>Conclusion</h2>
+      </div>
 
-  <p>
-    This result shows that a more complex model is not automatically better
-    than a simple and interpretable rule.
-  </p>
+      <p>
+        The analysis shows that a Random Forest model provided stronger
+        top-ranked prioritization than the transparent baseline on the
+        held-out evaluation set.
+      </p>
 
-  <p>
-    The final queue can help content teams prioritize webpages for manual
-    investigation. However, it should not be used as an automatic refresh
-    decision.
-  </p>
+      <p>
+        The main practical value is not automatic decision-making.
+        Instead, the model can help a content team decide which pages
+        deserve attention first.
+      </p>
 
-  <p>
-    Overall, the project provides directional evidence that February CTR
-    can support review prioritization within this dataset, validation split
-    and February-to-March 2026 time period.
-  </p>
-</section>
+      <p>
+        The result should remain a human-reviewed, directional decision
+        support signal rather than a guarantee of future content outcomes.
+      </p>
+    </section>
 
-    <section id="acknowledgements">
-  <h2>Acknowledgements</h2>
-
-  <p>
-    This project was completed as part of the FlyRank Machine Learning
-    Internship.
-  </p>
-
-  <p>
-    I acknowledge FlyRank for providing access to the anonymized internship
-    warehouse, the project framework and guidance on honest validation,
-    leakage prevention and evidence-based interpretation.
-  </p>
-
-  <p>
-    The analysis, modelling decisions, validation checks and conclusions
-    presented in this paper are my responsibility.
-  </p>
-
-  <p>
-    No client names, website domains, private search queries, access tokens
-    or confidential raw data are published in this report.
-  </p>
-</section>
   </main>
-  <footer>
-  <p>
-    FlyRank Machine Learning Internship Capstone · Muskan Shaikh · 2026
-  </p>
-</footer>
+
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================== -->
+
+  <footer class="footer">
+    <p>Muskan Shaikh · Machine Learning Research Artifact</p>
+    <p>Built on the FlyRank ML Internship dataset.</p>
+  </footer>
+
 </body>
 </html>
